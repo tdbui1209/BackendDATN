@@ -48,8 +48,8 @@ def read_user_role(email: str, db: Session = Depends(get_db)):
     return data
 
 
-@router.put("/nguoi-dung/{email}", response_model=schema_nguoi_dung.NguoiDungCreate, status_code=status.HTTP_200_OK)
-def update_user(email: str, user: schema_nguoi_dung.NguoiDungCreate, db: Session = Depends(get_db)):
+@router.put("/nguoi-dung/{email}", response_model=schema_nguoi_dung.NguoiDungBase, status_code=status.HTTP_200_OK)
+def update_user(email: str, user: schema_nguoi_dung.NguoiDungBase, db: Session = Depends(get_db)):
     data = crud_nguoi_dung.update_nguoi_dung(db, email, user)
     if data is None:
         raise HTTPException(status_code=404, detail="Không tìm thấy người dùng")

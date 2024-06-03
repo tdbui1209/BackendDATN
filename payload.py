@@ -6,6 +6,16 @@ from datetime import datetime
 
 # Config
 ENDPOINT = "http://192.168.1.8:8000/api/"
+session = requests.Session()
+
+
+# Payload gioi han to khai
+gioi_han_to_khai = {
+    "so_luong_gioi_han": 20
+}
+
+session.post(ENDPOINT + "gioi-han-to-khai", data=json.dumps(gioi_han_to_khai))
+print("Gioi han to khai da duoc tao")
 
 
 # Payload danh muc don vi
@@ -25,7 +35,7 @@ danh_muc_don_vi_list = [
 ]
 
 for danh_muc_don_vi in danh_muc_don_vi_list:
-    requests.post(ENDPOINT + "danh-muc-don-vi", data=json.dumps(danh_muc_don_vi))
+    session.post(ENDPOINT + "danh-muc-don-vi", data=json.dumps(danh_muc_don_vi))
     print(f"Danh muc don vi {danh_muc_don_vi['ma_danh_muc_don_vi']} da duoc tao")
 
 
@@ -90,7 +100,7 @@ don_vi_list = [
 ]
 
 for don_vi in don_vi_list:
-    requests.post(ENDPOINT + "don-vi", data=json.dumps(don_vi))
+    session.post(ENDPOINT + "don-vi", data=json.dumps(don_vi))
     print(f"Don vi {don_vi['ma_don_vi']} da duoc tao")
 
 
@@ -119,7 +129,7 @@ danh_muc_hang_hoa_list = [
 ]
 
 for danh_muc_hang_hoa in danh_muc_hang_hoa_list:
-    requests.post(ENDPOINT + "danh-muc-hang-hoa", data=json.dumps(danh_muc_hang_hoa))
+    session.post(ENDPOINT + "danh-muc-hang-hoa", data=json.dumps(danh_muc_hang_hoa))
     print(f"Danh muc hang hoa {danh_muc_hang_hoa['ma_danh_muc_hang_hoa']} da duoc tao")
 
 
@@ -192,7 +202,7 @@ nguoi_dung_list = [
 ]
 
 for nguoi_dung in nguoi_dung_list:
-    requests.post(ENDPOINT + "nguoi-dung", data=json.dumps(nguoi_dung))
+    session.post(ENDPOINT + "nguoi-dung", data=json.dumps(nguoi_dung))
     print(f"Nguoi dung {nguoi_dung['email']} da duoc tao")
 
 
@@ -202,7 +212,7 @@ ten_hang_hoa_list = [
     "Chè Thái Nguyên", "Chè Cổ Thụ", "Cà chua", "Hành", "Cải bắp",
     "Lá chè xanh", "Lá chè đen", "Hành củ", "Tỏi củ", "Cải thảo"
 ]
-for i in range(1, 100):
+for i in range(1, 100000):
     van_don = {
         "so_luong": random.randint(1, 300),
         "trong_luong": random.randint(50, 500),
@@ -233,11 +243,21 @@ for i in range(len(bien_so_list)):
     van_don_list.append(van_don)
 
 for van_don in van_don_list:
-    requests.post(ENDPOINT + "van-don", data=json.dumps(van_don))
+    session.post(ENDPOINT + "van-don", data=json.dumps(van_don))
     print(f"Van don {van_don['bien_so']} da duoc tao")
 
 for i in range(1, len(van_don_list)):
-    requests.patch(ENDPOINT + f"van-don/{i}/ngay-tao/{f'2024-{random.randint(1, 5)}-{random.randint(1, 22)}'}")
+    thang = random.randint(1, 5)
+    ngay = random.randint(1, 31)
+    if ngay > 28 and thang == 2:
+        ngay = 28
+    if ngay == 31 and thang in [4, 6, 9, 11]:
+        ngay = 30
+        
+    if thang == 5 and ngay > 29:
+        ngay = 29
+
+    session.patch(ENDPOINT + f"van-don/{i}/ngay-tao/{f'2024-{thang}-{ngay}'}")
     print(f"Ngay tao cua van don {van_don_list[i]['bien_so']} da duoc cap nhat")
 
 # Payload vai tro
@@ -260,7 +280,7 @@ vai_tro_list = [
 ]
 
 for vai_tro in vai_tro_list:
-    requests.post(ENDPOINT + "danh-muc-vai-tro", data=json.dumps(vai_tro))
+    session.post(ENDPOINT + "danh-muc-vai-tro", data=json.dumps(vai_tro))
     print(f"Vai tro {vai_tro['ten_vai_tro']} da duoc tao")
 
 
@@ -290,7 +310,7 @@ danh_muc_hanh_dong_list = [
 ]
 
 for danh_muc_hanh_dong in danh_muc_hanh_dong_list:
-    requests.post(ENDPOINT + "danh-muc-hanh-dong", data=json.dumps(danh_muc_hanh_dong))
+    session.post(ENDPOINT + "danh-muc-hanh-dong", data=json.dumps(danh_muc_hanh_dong))
     print(f"Danh muc hanh dong {danh_muc_hanh_dong['ten_hanh_dong']} da duoc tao")
 
 
@@ -311,7 +331,7 @@ trang_thai_to_khai_list = [
 ]
 
 for trang_thai_to_khai in trang_thai_to_khai_list:
-    requests.post(ENDPOINT + "trang-thai-to-khai", data=json.dumps(trang_thai_to_khai))
+    session.post(ENDPOINT + "trang-thai-to-khai", data=json.dumps(trang_thai_to_khai))
     print(f"Trang thai to khai {trang_thai_to_khai['ten_trang_thai']} da duoc tao")
 
 
@@ -326,21 +346,38 @@ trang_thai_phuong_tien_list = [
 ]
 
 for trang_thai_phuong_tien in trang_thai_phuong_tien_list:
-    requests.post(ENDPOINT + "danh-muc/trang-thai-phuong-tien", data=json.dumps(trang_thai_phuong_tien))
+    session.post(ENDPOINT + "danh-muc/trang-thai-phuong-tien", data=json.dumps(trang_thai_phuong_tien))
     print(f"Trang thai phuong tien {trang_thai_phuong_tien['ten_trang_thai']} da duoc tao")
 
 
 # Payload to khai
 to_khai_list = []
-for i in range(1, 100):
+for i in range(1, 10000):
     don_vi_dang_ky = ""
     for nguoi_dung in nguoi_dung_list:
         if nguoi_dung["email"] == van_don_list[i]["nguoi_tao"]:
             don_vi_dang_ky = nguoi_dung["thuoc_don_vi"]
             break
-    ngay_dang_ky = f"2024-0{random.randint(1, 5)}-{random.randint(1, 22)}"
-    if int(ngay_dang_ky.split("-")[-1]) < 10:
-        ngay_dang_ky = ngay_dang_ky[:8] + '0' + ngay_dang_ky[-1]
+    
+    # thang = random.randint(1, 5)
+    thang = random.choice([1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 7, 8, 9, 10, 11, 12])
+    ngay = random.randint(1, 31)
+    if ngay > 29 and thang == 2:
+        ngay = 29
+    if ngay == 31 and thang in [4, 6, 9, 11]:
+        ngay = 30
+
+    # if thang == 6 and ngay > :
+    #     ngay = 29
+
+    thang = str(thang)
+    ngay = str(ngay)
+    if int(thang) < 10:
+        thang = '0' + thang
+    if int(ngay) < 10:
+        ngay = '0' + ngay
+    ngay_dang_ky = f"2024-{thang}-{ngay}"
+
     to_khai = {
         "email": van_don_list[i]["nguoi_tao"],
         "don_vi_dang_ky": don_vi_dang_ky,
@@ -350,12 +387,14 @@ for i in range(1, 100):
     to_khai_list.append(to_khai)
 
 for to_khai in to_khai_list:
-    requests.post(ENDPOINT + "to-khai", data=json.dumps(to_khai))
+    session.post(ENDPOINT + "to-khai", data=json.dumps(to_khai))
     print(f"To khai {to_khai['ma_van_don']} da duoc tao")
 
-for i in range(1, len(van_don_list)):
-    van_don_response = requests.get(ENDPOINT + f"van-don/{i}")
-    requests.patch(ENDPOINT + f"to-khai/{i}/ngay-tao/{van_don_response.json()['ngay_tao_van_don']}")
+for i in range(1, len(van_don_list)-5):
+    van_don_response = session.get(ENDPOINT + f"van-don/{i}")
+    session.patch(ENDPOINT + f"to-khai/{i}/ngay-tao/{van_don_response.json()['ngay_tao_van_don']}")
+    if session.get(ENDPOINT + f"to-khai/{i}").json()["ma_trang_thai"] == 1:
+        session.patch(ENDPOINT + f"to-khai/{i}/trang-thai/{random.choice([1, 3, 3, 4, 4, 4, 4, 4, 4])}")
     print(f"Ngay tao cua to khai {i} da duoc cap nhat")
 
 
@@ -370,5 +409,5 @@ for i in range(len(bien_so_list)):
     to_khai_list.append(to_khai)
 
 for to_khai in to_khai_list:
-    requests.post(ENDPOINT + "to-khai", data=json.dumps(to_khai))
+    session.post(ENDPOINT + "to-khai", data=json.dumps(to_khai))
     print(f"To khai {to_khai['ma_van_don']} da duoc tao")

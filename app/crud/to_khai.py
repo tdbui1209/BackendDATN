@@ -3,11 +3,14 @@ from app.models import ToKhai, VanDon
 from app.schemas.to_khai import ToKhaiCreate
 from datetime import datetime
 from sqlalchemy import func
+from app.crud.gioi_han_to_khai import get_gioi_han_to_khai
+from sqlalchemy import func
 
 
 def create_to_khai(db: Session, to_khai: ToKhaiCreate):
     data = get_to_khai_by_ngay_dang_ky(db, to_khai.ngay_dang_ky)
-    if len(data) > 4:
+    gioi_han = int(get_gioi_han_to_khai(db))
+    if len(data) > gioi_han:
         db_to_khai = ToKhai(
             email=to_khai.email,
             don_vi_dang_ky=to_khai.don_vi_dang_ky,
@@ -47,7 +50,7 @@ def get_to_khai_by_ma_doanh_nghiep(db: Session, skip: int = 0, limit: int = 100,
         result = result.filter(ToKhai.don_vi_dang_ky == ma_doanh_nghiep)
     if ma_trang_thai:
         result = result.filter(ToKhai.ma_trang_thai == ma_trang_thai)
-    return result.offset(skip).limit(limit).all()
+    return result.order_by(ToKhai.ngay_dang_ky.desc()).offset(skip).limit(limit).all()
 
 
 def get_to_khai(db: Session, skip: int = 0, limit: int = 100, search_string: str = None, ma_trang_thai: str = None):
@@ -60,7 +63,7 @@ def get_to_khai(db: Session, skip: int = 0, limit: int = 100, search_string: str
 
 
 def get_to_khai_by_ngay_dang_ky(db: Session, ngay_dang_ky: str):
-    return db.query(ToKhai).filter(func.date(ToKhai.ngay_dang_ky) == ngay_dang_ky).all()
+    return db.query(ToKhai).filter(func.date(ToKhai.ngay_dang_ky) == ngay_dang_ky).order_by(ToKhai.ma_trang_thai).all()
 
 
 def get_to_khai_hop_le_by_ngay_dang_ky(db: Session, ngay_dang_ky: str):
@@ -108,3 +111,25 @@ def update_ngay_tao_to_khai(db: Session, to_khai_id: int, ngay_tao_to_khai: str)
 
 def get_tong_so_to_khai_theo_ngay(db: Session, ngay_dang_ky: str):
     return db.query(ToKhai).filter(func.date(ToKhai.ngay_dang_ky) == ngay_dang_ky).filter(ToKhai.ma_trang_thai == 1).count()
+
+
+def update_trang_thai_to_khai_by_ma_trang_thai(db: Session, to_khai_id: int, ma_trang_thai: int):
+    db.query(ToKhai).filter(ToKhai.ma_to_khai == to_khai_id).update({
+        ToKhai.ma_trang_thai: ma_trang_thai
+    })
+    db.commit()
+    return db.query(ToKhai).filter(ToKhai.ma_to_khai == to_khai_id).first()
+
+
+def get_so_luong_to_khai_max(db: Session):
+    result = db.query(func.count(ToKhai.ma_to_khai)).group_by(func.date(ToKhai.ngay_dang_ky)).filter(ToKhai.ma_trang_thai == 1).order_by(func.count(ToKhai.ma_to_khai).desc()).first()
+    if result:
+        return result[0]
+    return 0
+
+
+def get_so_luong_to_khai_min(db: Session):
+    result = db.query(func.count(ToKhai.ma_to_khai)).group_by(func.date(ToKhai.ngay_dang_ky)).filter(ToKhai.ma_trang_thai == 1).order_by(func.count(ToKhai.ma_to_khai).asc()).first()
+    if result:
+        return result[0]
+    return 0

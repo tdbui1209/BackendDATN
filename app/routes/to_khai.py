@@ -57,6 +57,16 @@ def read_to_khai_by_ngay_dang_ky_and_bien_so(ngay_dang_ky: str, bien_so: str, db
     return data
 
 
+@router.get("/to-khai/so-luong/to-khai-max", response_model=int)
+def read_so_luong_to_khai_max(db: Session = Depends(get_db)):
+    return to_khai_crud.get_so_luong_to_khai_max(db)
+
+
+@router.get("/to-khai/so-luong/to-khai-min", response_model=int)
+def read_so_luong_to_khai_min(db: Session = Depends(get_db)):
+    return to_khai_crud.get_so_luong_to_khai_min(db)
+
+
 @router.put("/to-khai/{to_khai_id}", response_model=to_khai_schema.ToKhai)
 def update_to_khai(to_khai_id: int, to_khai: to_khai_schema.ToKhaiCreate, db: Session = Depends(get_db)):
     db_to_khai = to_khai_crud.update_to_khai(db, to_khai_id, to_khai)
@@ -85,6 +95,14 @@ def delete_to_khai(to_khai_id: int, db: Session = Depends(get_db)):
 @router.patch("/to-khai/{to_khai_id}/ngay-tao/{ngay_tao_to_khai}", response_model=to_khai_schema.ToKhai)
 def update_ngay_tao_to_khai(to_khai_id: int, ngay_tao_to_khai: str, db: Session = Depends(get_db)):
     db_to_khai = to_khai_crud.update_ngay_tao_to_khai(db, to_khai_id, ngay_tao_to_khai)
+    if db_to_khai is None:
+        raise HTTPException(status_code=404, detail="Tờ khai not found")
+    return db_to_khai
+
+
+@router.patch("/to-khai/{to_khai_id}/trang-thai/{ma_trang_thai}", response_model=to_khai_schema.ToKhai)
+def update_trang_thai_to_khai_by_ma_trang_thai(to_khai_id: int, ma_trang_thai: str, db: Session = Depends(get_db)):
+    db_to_khai = to_khai_crud.update_trang_thai_to_khai_by_ma_trang_thai(db, to_khai_id, ma_trang_thai)
     if db_to_khai is None:
         raise HTTPException(status_code=404, detail="Tờ khai not found")
     return db_to_khai

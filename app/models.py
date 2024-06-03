@@ -167,3 +167,11 @@ class LichSuTaiKhoan(Base):
 
     nguoi_dung = relationship("NguoiDung", back_populates="lich_su_tai_khoan")
     danh_muc_hanh_dong = relationship("DanhMucHanhDong", back_populates="lich_su_tai_khoan")
+
+
+class GioiHanToKhai(Base):
+    __tablename__ = "gioi_han_to_khai"
+
+    ma_lich_su = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    so_luong_gioi_han = Column(Integer, nullable=False)
+    thoi_gian = Column(TIMESTAMP, nullable=False)

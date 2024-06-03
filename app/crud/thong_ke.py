@@ -75,7 +75,7 @@ def get_so_luong_to_khai_theo_quy_by_ma_doanh_nghiep(db: Session, ma_doanh_nghie
     ).count()
 
 
-def get_so_luong_to_khai_theo_trang_thai(db: Session, ma_doanh_nghiep: str):
+def get_so_luong_to_khai_theo_trang_thai_by_ma_doanh_nghiep(db: Session, ma_doanh_nghiep: str):
     danh_muc_trang_thai = db.query(TrangThaiToKhai).all()
     result = {trang_thai.ten_trang_thai: 0 for trang_thai in danh_muc_trang_thai}
     for trang_thai in danh_muc_trang_thai:
@@ -128,3 +128,57 @@ def download_lich_su_van_don(db: Session, ma_doanh_nghiep: str):
 
 def download_lich_su_tai_khoan(db: Session):
     return db.query(LichSuTaiKhoan).join(DanhMucHanhDong, LichSuTaiKhoan.ma_hanh_dong == DanhMucHanhDong.ma_hanh_dong).all()
+
+
+def get_so_luong_to_khai_theo_ma_doanh_nghiep(db: Session, ma_doanh_nghiep: str):
+    return db.query(ToKhai).join(NguoiDung).filter(
+        NguoiDung.thuoc_don_vi == ma_doanh_nghiep
+    ).count()
+
+
+def get_so_luong_van_don_theo_ma_doanh_nghiep(db: Session, ma_doanh_nghiep: str):
+    return db.query(VanDon).join(NguoiDung).filter(
+        NguoiDung.thuoc_don_vi == ma_doanh_nghiep
+    ).count()
+
+
+def get_so_luong_to_khai(db: Session):
+    return db.query(ToKhai).count()
+
+
+def get_so_luong_to_khai_theo_ngay(db: Session, ngay_dang_ky: str):
+    return db.query(ToKhai).filter(func.date(ToKhai.ngay_dang_ky) == ngay_dang_ky).count()
+
+
+def get_so_luong_to_khai_theo_thang(db: Session, thang: int):
+    if thang == 12:
+        return db.query(ToKhai).filter(
+            func.date(ToKhai.ngay_dang_ky).between(datetime.now().replace(month=10, day=1).strftime('%Y-%m-%d'),
+                                                    datetime.now().replace(month=1, day=1).strftime('%Y-%m-%d'))
+        ).count()
+    return db.query(ToKhai).filter(
+        func.date(ToKhai.ngay_dang_ky).between(datetime.now().replace(month=thang, day=1).strftime('%Y-%m-%d'),
+                                                datetime.now().replace(month=thang + 1, day=1).strftime('%Y-%m-%d'))
+    ).count()
+
+
+def get_so_luong_to_khai_theo_quy(db: Session, quy: int):
+    if quy == 4:
+        return db.query(ToKhai).filter(
+            func.date(ToKhai.ngay_dang_ky).between(datetime.now().replace(month=10, day=1).strftime('%Y-%m-%d'),
+                                                    datetime.now().replace(month=1, day=1).strftime('%Y-%m-%d'))
+        ).count()
+    return db.query(ToKhai).filter(
+        func.date(ToKhai.ngay_dang_ky).between(datetime.now().replace(month=quy * 3 - 2, day=1).strftime('%Y-%m-%d'),
+                                                datetime.now().replace(month=quy * 3 + 1, day=1).strftime('%Y-%m-%d'))
+    ).count()
+
+
+def get_so_luong_to_khai_theo_trang_thai(db: Session):
+    danh_muc_trang_thai = db.query(TrangThaiToKhai).all()
+    result = {trang_thai.ten_trang_thai: 0 for trang_thai in danh_muc_trang_thai}
+    for trang_thai in danh_muc_trang_thai:
+        result[trang_thai.ten_trang_thai] = db.query(ToKhai).filter(
+            ToKhai.ma_trang_thai == trang_thai.ma_trang_thai
+        ).count()
+    return result

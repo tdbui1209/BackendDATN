@@ -20,9 +20,19 @@ def get_so_luong_van_don_theo_ngay_by_ma_doanh_nghiep(ma_doanh_nghiep: str, db: 
     return crud_thong_ke.get_so_luong_van_don_theo_ngay_by_ma_doanh_nghiep(db, ma_doanh_nghiep)
 
 
+@router.get("/thong-ke/so-luong-van-don/{ma_doanh_nghiep}")
+def get_so_luong_van_don_by_ma_doanh_nghiep(ma_doanh_nghiep: str, db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_van_don_theo_ma_doanh_nghiep(db, ma_doanh_nghiep)
+
+
 @router.get("/thong-ke/so-luong-to-khai-theo-ngay/{ma_doanh_nghiep}")
 def get_so_luong_to_khai_theo_ngay_by_ma_doanh_nghiep(ma_doanh_nghiep: str, db: Session = Depends(get_db)):
     return crud_thong_ke.get_so_luong_to_khai_theo_ngay_by_ma_doanh_nghiep(db, ma_doanh_nghiep)
+
+
+@router.get("/thong-ke/so-luong-to-khai/{ma_doanh_nghiep}")
+def get_so_luong_to_khai_by_ma_doanh_nghiep(ma_doanh_nghiep: str, db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai_theo_ma_doanh_nghiep(db, ma_doanh_nghiep)
 
 
 @router.get("/thong-ke/so-luong-van-don-theo-thang/{ma_doanh_nghiep}/{thang}")
@@ -46,8 +56,8 @@ def get_so_luong_to_khai_theo_quy_by_ma_doanh_nghiep(ma_doanh_nghiep: str, quy: 
 
 
 @router.get("/thong-ke/so-luong-to-khai-theo-trang-thai/{ma_doanh_nghiep}")
-def get_so_luong_to_khai_theo_trang_thai(ma_doanh_nghiep: str, db: Session = Depends(get_db)):
-    return crud_thong_ke.get_so_luong_to_khai_theo_trang_thai(db, ma_doanh_nghiep)
+def get_so_luong_to_khai_theo_trang_thai_by_ma_doanh_nghiep(ma_doanh_nghiep: str, db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai_theo_trang_thai_by_ma_doanh_nghiep(db, ma_doanh_nghiep)
 
 
 @router.get("/thong-ke/so-luong-van-don-mtd/{ma_doanh_nghiep}")
@@ -127,3 +137,28 @@ def download_lich_su_tai_khoan(db: Session = Depends(get_db)):
     response = StreamingResponse(iter([stream.getvalue()]), media_type="text/csv")
     response.headers["Content-Disposition"] = "attachment; filename=lich_su_tai_khoan.csv"
     return response
+
+
+@router.get("/thong-ke/so-luong-to-khai")
+def get_so_luong_to_khai(db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai(db)
+
+
+@router.get("/thong-ke/so-luong-to-khai-theo-ngay/{ngay_dang_ky}")
+def get_so_luong_to_khai_theo_ngay(ngay_dang_ky: str, db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai_theo_ngay(db, ngay_dang_ky)
+
+
+@router.get("/thong-ke/so-luong-to-khai-theo-thang/{thang}")
+def get_so_luong_to_khai_theo_thang(thang: int, db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai_theo_thang(db, thang)
+
+
+@router.get("/thong-ke/so-luong-to-khai-theo-quy/{quy}")
+def get_so_luong_to_khai_theo_quy(quy: int, db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai_theo_quy(db, quy)
+
+
+@router.get("/thong-ke/so-luong-to-khai-theo-trang-thai")
+def get_so_luong_to_khai_theo_trang_thai(db: Session = Depends(get_db)):
+    return crud_thong_ke.get_so_luong_to_khai_theo_trang_thai(db)
